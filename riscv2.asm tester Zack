@@ -1,0 +1,173 @@
+.eqv PrintChar, 11
+.eqv ReadChar, 12
+.eqv PrintString, 4
+.eqv Exit, 10
+
+.data
+Board: .word L1 L2 L3 L4 L5 L6 L7
+
+L1: .string ":.......:"
+L2: .string ":.......:"
+L3: .string ":.......:"
+L4: .string ":.......:"
+L5: .string ":.......:"
+L6: .string ":.......:"
+L7: .string ":.......:"
+L8: .space 13
+
+.text
+la s0, Board
+lw s1, (s0)
+lw s2, 4(s0)
+lw s3, 8(s0)
+lw s4, 12(s0)
+lw s5, 16(s0)
+lw s6, 20(s0)
+lw s7, 24(s0)
+li t6,1 #counter
+
+
+main:
+	li t3,'d'
+
+	li a7,ReadChar
+	ecall
+	
+	beq a0,t3,gameStatus
+	li t3,'q'
+	beq a0,t3,Done
+	bgtz a0,gameActionCheck
+	j Done
+
+gameActionCheck:
+	li t3,56
+	bgt a0,t3,Done
+
+	j continueGameAction
+
+	
+continueGameAction:
+	li t3, '.'
+	
+	add t0, s0, x0
+
+    rowLoop:
+        beqz t0, done  
+
+        lb t1, 2(t0)
+
+        beq t1, t3, slotFound  
+
+        lw t0, 20(t0)
+        j rowLoop
+
+    done:
+    j main
+  
+slotFound: 
+	li t1,'X'
+	li t2,'O'
+	li t5,2
+	rem t5, t6, t5 
+	beqz t5, chooseX
+	mv t1, t2
+	j updateSlot
+
+	chooseX:
+	mv t2, t1
+	j updateSlot
+
+	
+updateSlot:
+    li a6, '1'     
+    beq a0, a6, colonne1
+    li a6, '2'     
+    beq a0, a6, colonne2
+    li a6, '3'    
+    beq a0, a6, colonne3
+    li a7, '4'     
+    beq a0, a6, colonne4
+    li a6, '5'    
+    beq a0, a6, colonne5
+    li a7, '6'     
+    beq a0, a6, colonne6
+    li a6, '7'     
+    beq a0, a6, colonne7
+
+    colonne1:
+    sb t1, 1(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne2:
+    sb t1, 2(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne3:
+    sb t1, 3(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne4:
+    sb t1, 4(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne5:
+    sb t1, 5(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne6:
+    sb t1, 6(t0)      
+    addi t6, t6, 1    
+    j main
+    colonne7:
+    sb t1, 7(t0)      
+    addi t6, t6, 1  
+    j main
+
+
+	
+gameStatus:
+    li t0, '\n'
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s1
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s2
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s3
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s4
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s5
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    li a7, PrintString
+    mv a0, s6
+    ecall
+    li a7, PrintChar
+    mv a0, t0
+    ecall
+    j main
+
+Done:
+    li a7, Exit
+    ecall
